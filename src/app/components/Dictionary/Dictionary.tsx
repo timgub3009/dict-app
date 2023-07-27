@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React from "react";
 import Search from "./Search";
@@ -9,8 +9,8 @@ const Dictionary = () => {
   return (
     <section className="dictionary max-w-screen-xl mx-auto py-8 flex flex-col items-center">
       <div className=" flex items-center justify-between w-full">
-      <Search />
-      <PopupAdd />
+        <Search />
+        <PopupAdd />
       </div>
       <DictTable />
     </section>

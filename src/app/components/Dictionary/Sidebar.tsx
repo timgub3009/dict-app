@@ -1,13 +1,12 @@
-"use client";
-
 import React from "react";
+import { useState } from "react";
 
 const Sidebar = () => {
 
   return (
     <aside className="h-screen">
       <form
-        action=""
+        action=''
         className="h-full flex flex-col items-center justify-center"
       >
         <input
