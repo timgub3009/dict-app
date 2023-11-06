@@ -4,6 +4,7 @@ import Image from "next/image";
 import React, { useCallback, useState } from "react";
 import logo from "../../../public/images/logo.svg";
 import Input from "../(common)/Input";
+import axios from "axios";
 
 const Auth = () => {
   const [name, setName] = useState("");
@@ -17,6 +18,18 @@ const Auth = () => {
       currentStatus === "authorized" ? "unauthorized" : "authorized"
     );
   }, []);
+
+  const register = useCallback(async () => {
+    try {
+      await axios.post("/api/register", {
+        email,
+        name,
+        password,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [email, name, password]);
 
   return (
     <div className=" relative h-full w-full bg-[url(/images/startingPic.png)] bg-center bg-no-repeat bg-fixed bg-cover">
