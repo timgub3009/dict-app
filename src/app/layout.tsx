@@ -1,7 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
-import { Header } from "./components/Header/Header";
+import { Header } from "./(main)/Header/Header";
 
 const font = Nunito({ subsets: ["latin"] });
 
@@ -18,7 +18,6 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className={font.className}>
-        <Header />
         {children}
       </body>
     </html>
