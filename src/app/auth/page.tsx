@@ -6,7 +6,7 @@ import logo from "../../../public/images/logo.svg";
 import Input from "../(common)/Input";
 import axios from "axios";
 
-const Auth = () => {
+const AuthForm = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -67,7 +67,10 @@ const Auth = () => {
                 value={password}
               />
             </form>
-            <button className=" bg-red-400 rounded-md p-2 w-full mt-8 transition hover:bg-red-500">
+            <button
+              className=" bg-red-400 rounded-md p-2 w-full mt-8 transition hover:bg-red-500"
+              onClick={register}
+            >
               {status === "unauthorized" ? "Создать аккаунт" : "Войти"}
             </button>
             <p className=" text-neutral-400 mt-9 text-center">
@@ -90,4 +93,4 @@ const Auth = () => {
   );
 };
 
-export default Auth;
+export default AuthForm;
