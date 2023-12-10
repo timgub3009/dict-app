@@ -1,17 +1,16 @@
-interface ICard {
-  word: string;
-  translation: string;
-}
 
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import deleteBtn from "../../../../public/images/bucket-square-svgrepo-com.svg";
 import switcher from "../../../../public/images/changer.svg";
 import PopupEdit from "./PopupEdit";
+import { iWord } from "./Dictionary";
 
-const Word = ({ word, translation, id, onDelete, onUpdate }: ICard) => {
+const Word = ({ word, translation, id, onDelete, onUpdate }: iWord) => {
   const [isRus, setIsRus] = React.useState(false);
   const [editPopupOpened, setEditPopupOpened] = useState(false);
+
+  console.log(word)
 
   const toggleContent = (evt: React.MouseEvent) => {
     evt.stopPropagation();

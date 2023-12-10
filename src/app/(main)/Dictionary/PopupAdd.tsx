@@ -1,80 +1,91 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  ChangeEvent,
+  FormEvent,
+} from "react";
+import { iWord } from "./Dictionary";
 
-const PopupAdd = ({ onAdd }) => {
-  const [isOpen, setIsOpen] = useState(false);
+type PopupAddProps = {
+  onAdd: (values: iWord) => void;
+};
 
-  const [values, setValues] = useState({
+const PopupAdd: React.FC<PopupAddProps> = ({ onAdd }) => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [values, setValues] = useState<iWord>({
     word: "",
     translation: "",
+    id: "",
   });
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
-  const sidebarRef = useRef();
+  const generateId = (): string => {
+    return (
+      Math.random().toString(16).slice(2) + new Date().getTime().toString(36)
+    );
+  };
 
-  function handleChange(evt) {
+  const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
     setValues({
       ...values,
       [evt.target.name]: evt.target.value,
     });
-  }
+  };
 
-  function handleSubmit(evt) {
+  const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
-
     onAdd(values);
-    setValues({ word: "", translation: "" });
+    setValues({ word: "", translation: "", id: generateId() });
     setIsOpen(false);
-  }
+  };
+
+  const closeByEscape = useCallback((evt: KeyboardEvent) => {
+    if (evt.key === "Escape") {
+      setIsOpen(false);
+      setValues({ word: "", translation: "", id: generateId() });
+    }
+  }, []);
+
+  const closeOnOverlay = useCallback((evt: MouseEvent) => {
+    if (
+      sidebarRef.current &&
+      !sidebarRef.current.contains(evt.target as Node)
+    ) {
+      setIsOpen(false);
+    }
+  }, []);
 
   useEffect(() => {
-    function closeByEscape(evt) {
-      if (evt.key === "Escape") {
-        setIsOpen(false);
-        setValues({ word: "", translation: "" });
-      }
-    }
-
     if (isOpen) {
       document.addEventListener("keydown", closeByEscape);
-
-      return () => {
-        document.removeEventListener("keydown", closeByEscape);
-      };
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    function closeOnOverlay(evt) {
-      if (evt.target.contains(sidebarRef.current)) {
-        setIsOpen(false);
-      }
-    }
-
-    if (isOpen) {
       document.addEventListener("mousedown", closeOnOverlay);
 
       return () => {
+        document.removeEventListener("keydown", closeByEscape);
         document.removeEventListener("mousedown", closeOnOverlay);
       };
     }
-  }, [isOpen]);
+  }, [isOpen, closeByEscape, closeOnOverlay]);
 
-  const toggleOpen = () => {
+  const toggleOpen = useCallback(() => {
     setIsOpen((value) => !value);
-  };
+  }, []);
 
   return (
     <div>
       <button
         onClick={toggleOpen}
-        className=" bg-yellow-300 p-3 rounded-full transition ease-out delay-100 opacity-100 hover:opacity-50"
+        className="bg-yellow-300 p-3 rounded-full transition ease-out delay-100 opacity-100 hover:opacity-50"
       >
         Добавить слово или выражение
       </button>
       {isOpen && (
         <div
-          className=" fixed top-0 right-0 w-1/3 bg-slate-200 "
+          className="fixed top-0 right-0 w-1/3 bg-slate-200"
           ref={sidebarRef}
         >
           <aside className="h-screen">
@@ -101,7 +112,8 @@ const PopupAdd = ({ onAdd }) => {
                 onChange={handleChange}
                 value={values.translation}
               />
-              <button type="submit"
+              <button
+                type="submit"
                 className="bg-slate-400 p-3 text-center rounded-full shadow-sm transition delay-100 hover:shadow-slate-950"
               >
                 Добавить
