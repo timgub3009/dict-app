@@ -1,37 +1,39 @@
-
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { MouseEvent, useState } from "react";
 import deleteBtn from "../../../../public/images/bucket-square-svgrepo-com.svg";
 import switcher from "../../../../public/images/changer.svg";
 import PopupEdit from "./PopupEdit";
-import { iWord } from "./Dictionary";
+import { IWord } from "./Dictionary";
 
-const Word = ({ word, translation, id, onDelete, onUpdate }: iWord) => {
-  const [isRus, setIsRus] = React.useState(false);
-  const [editPopupOpened, setEditPopupOpened] = useState(false);
+interface WordProps extends IWord {
+  onDelete: (id: number) => void;
+  onUpdate: (word: IWord) => void;
+}
 
-  console.log(word)
+const Word: React.FC<WordProps> = ({
+  word,
+  translation,
+  id,
+  onDelete,
+  onUpdate,
+}: WordProps) => {
+  console.log("Props received:", { word, translation, id });
 
-  const toggleContent = (evt: React.MouseEvent) => {
+  const [isRus, setIsRus] = useState<boolean>(false);
+  const [editPopupOpened, setEditPopupOpened] = useState<boolean>(false);
+
+  const toggleContent = (evt: MouseEvent): void => {
     evt.stopPropagation();
 
-    if (!isRus) {
-      setIsRus(true);
-    } else {
-      setIsRus(false);
-    }
+    setIsRus((prevIsRus) => !prevIsRus);
   };
 
-  const deleting = (id) => {
+  const deleting = (): void => {
     onDelete(id);
   };
 
-  const turnEdit = (evt) => {
-    if (!editPopupOpened) {
-      setEditPopupOpened(true);
-    } else {
-      setEditPopupOpened(true);
-    }
+  const turnEdit = (): void => {
+    setEditPopupOpened((prevEditPopupOpened) => !prevEditPopupOpened);
   };
 
   return (
@@ -40,7 +42,7 @@ const Word = ({ word, translation, id, onDelete, onUpdate }: iWord) => {
         onClick={turnEdit}
         className="bg-yellow-100 rounded-lg h-32 flex items-center justify-center font-extrabold text-xl text-center relative cursor-pointer"
       >
-        <button onClick={() => deleting(id)}>
+        <button onClick={() => deleting()}>
           <Image
             src={deleteBtn}
             alt="иконка мусорной корзины"

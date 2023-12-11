@@ -1,95 +1,98 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
 import Search from "./Search";
 import PopupAdd from "./PopupAdd";
 import Word from "./Word";
 import axios from "axios";
 
-export interface iWord {
-  id: string;
+interface ICard {
+  id: number;
+  foreignWord: string;
+  nativeWord: string;
+}
+
+export interface IWord {
+  id: number;
   word: string;
   translation: string;
 }
 
-const Dictionary = (): JSX.Element => {
-  const [element, setElement] = useState<iWord[]>([]);
-  const [word, setWord] = useState<string>("");
-  const [translation, setTranslation] = useState<string>("");
-
-  const fetchData = async (): Promise<void> => {
-    try {
-      const response = await axios.get("/api/cards");
-      if (response.data.length === 0) {
-        return;
-      }
-      setElement(response.data);
-      console.log(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+const Dictionary: React.FC = (): JSX.Element => {
+  const [words, setWords] = useState<IWord[]>([]);
+  const [newWord, setNewWord] = useState<string>("");
+  const [newTranslation, setNewTranslation] = useState<string>("");
 
   useEffect(() => {
+    /**
+     * Fetches data from the "/api/cards" endpoint and updates the words state.
+     */
+    const fetchData = async (): Promise<void> => {
+      try {
+        const response = await axios.get<ICard[]>("/api/cards");
+        if (response.data.length === 0) {
+          return;
+        }
+        const mappedWords: IWord[] = response.data.map((card) => ({
+          id: card.id,
+          word: card.foreignWord,
+          translation: card.nativeWord,
+        }));
+        setWords(mappedWords);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     fetchData();
   }, []);
 
-  console.log(element);
-
-  const save = async ({ word, translation }: iWord): Promise<void> => {
+  const saveWord = async ({ word, translation }: IWord): Promise<void> => {
     try {
       const response = await axios.post("/api/cards", {
         foreignWord: word,
         nativeWord: translation,
       });
       const { id, foreignWord, nativeWord } = response.data;
-      setElement((prevElement) => [
-        {
-          id,
-          word: foreignWord,
-          translation: nativeWord,
-        },
-        ...prevElement,
-      ]);
+      const newWord: IWord = {
+        id,
+        word: foreignWord,
+        translation: nativeWord,
+      };
+      setWords((prevWords) => [newWord, ...prevWords]);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleDeleteWord = (id: string): void => {
-    setElement((prevElement) => prevElement.filter((e) => e.id !== id));
+  const deleteWord = (id: number): void => {
+    setWords((prevWords) => prevWords.filter((word) => word.id !== id));
   };
 
-  const handleUpdate = ({ word, translation, id }: iWord) => {
-    const updatedElement = { ...element, word, translation, id };
-    setWord(word);
-    setTranslation(translation);
-    setElement([updatedElement]);
+  const updateWord = ({ word, translation, id }: IWord) => {
+    const updatedWord: IWord = { id, word, translation };
+    setNewWord(word);
+    setNewTranslation(translation);
+    setWords([updatedWord]);
   };
 
   return (
     <section className="dictionary max-w-screen-xl mx-auto py-8 pt-40 flex flex-col items-center w-full h-full">
       <div className="flex items-center justify-between w-full">
         <Search />
-        <PopupAdd onAdd={save} />
+        <PopupAdd onAdd={saveWord} />
       </div>
       <ul className="mt-8 grid grid-cols-4 w-full gap-5">
-        {
-        element.length > 0 ? (
-          element.map((el) => (
+        {words.length > 0 ? (
+          words.map((word) => (
             <Word
-              key={el.id}
-              id={el.id}
-              word={el.word}
-              translation={el.translation}
-              onDelete={handleDeleteWord}
-              onUpdate={handleUpdate}
+              key={word.id}
+              {...word}
+              onDelete={deleteWord}
+              onUpdate={updateWord}
             />
           ))
         ) : (
           <p>Словарь пуст</p>
-        )
-       }
+        )}
       </ul>
     </section>
   );
