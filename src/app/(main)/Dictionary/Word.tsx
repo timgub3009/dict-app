@@ -6,8 +6,8 @@ import PopupEdit from "./PopupEdit";
 import { IWord } from "./Dictionary";
 
 interface WordProps extends IWord {
-  onDelete: (id: number) => void;
-  onUpdate: (word: IWord) => void;
+  onDelete: (id: string) => void;
+  onUpdate: (id: string) => void;
 }
 
 const Word: React.FC<WordProps> = ({
@@ -17,8 +17,6 @@ const Word: React.FC<WordProps> = ({
   onDelete,
   onUpdate,
 }: WordProps) => {
-  console.log("Props received:", { word, translation, id });
-
   const [isRus, setIsRus] = useState<boolean>(false);
   const [editPopupOpened, setEditPopupOpened] = useState<boolean>(false);
 
@@ -28,12 +26,14 @@ const Word: React.FC<WordProps> = ({
     setIsRus((prevIsRus) => !prevIsRus);
   };
 
-  const deleting = (): void => {
+  const deleting = (event: MouseEvent): void => {
+    event.stopPropagation();
     onDelete(id);
   };
 
   const turnEdit = (): void => {
     setEditPopupOpened((prevEditPopupOpened) => !prevEditPopupOpened);
+    onUpdate(id);
   };
 
   return (
@@ -42,7 +42,7 @@ const Word: React.FC<WordProps> = ({
         onClick={turnEdit}
         className="bg-yellow-100 rounded-lg h-32 flex items-center justify-center font-extrabold text-xl text-center relative cursor-pointer"
       >
-        <button onClick={() => deleting()}>
+        <button onClick={(evt) => deleting(evt)}>
           <Image
             src={deleteBtn}
             alt="иконка мусорной корзины"
@@ -51,7 +51,7 @@ const Word: React.FC<WordProps> = ({
             className="absolute top-0 right-0"
           />
         </button>
-        <button onClick={toggleContent}>
+        <button onClick={(evt) => toggleContent(evt)}>
           <Image
             src={switcher}
             alt="иконка замены"
@@ -65,6 +65,7 @@ const Word: React.FC<WordProps> = ({
       </li>
       {editPopupOpened && (
         <PopupEdit
+          id={id}
           word={word}
           translation={translation}
           popupIsOpened={setEditPopupOpened}

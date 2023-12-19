@@ -5,13 +5,13 @@ import Word from "./Word";
 import axios from "axios";
 
 interface ICard {
-  id: number;
+  id: string;
   foreignWord: string;
   nativeWord: string;
 }
 
 export interface IWord {
-  id: number;
+  id: string;
   word: string;
   translation: string;
 }
@@ -20,6 +20,10 @@ const Dictionary: React.FC = (): JSX.Element => {
   const [words, setWords] = useState<IWord[]>([]);
   const [newWord, setNewWord] = useState<string>("");
   const [newTranslation, setNewTranslation] = useState<string>("");
+
+  useEffect(() => {
+    console.log("Состояние words обновлено:", words);
+  }, [words]);
 
   useEffect(() => {
     /**
@@ -37,6 +41,7 @@ const Dictionary: React.FC = (): JSX.Element => {
           translation: card.nativeWord,
         }));
         setWords(mappedWords);
+        console.log(mappedWords);
       } catch (error) {
         console.log(error);
       }
@@ -63,15 +68,38 @@ const Dictionary: React.FC = (): JSX.Element => {
     }
   };
 
-  const deleteWord = (id: number): void => {
-    setWords((prevWords) => prevWords.filter((word) => word.id !== id));
+  const deleteWord = async (id: string): Promise<void> => {
+    try {
+      const response = await axios.delete(`/api/cards/${id}`);
+      console.log("Удаление успешно:", response.data);
+      setWords((prevWords) => prevWords.filter((word) => word.id !== id));
+    } catch (error) {
+      console.error("Ошибка при удалении:", error);
+    }
   };
 
-  const updateWord = ({ word, translation, id }: IWord) => {
-    const updatedWord: IWord = { id, word, translation };
-    setNewWord(word);
-    setNewTranslation(translation);
-    setWords([updatedWord]);
+  const updateWord = async ({ word, translation, id }: IWord) => {
+    try {
+      const response = await axios.patch(`/api/cards/${id}`, {
+        foreignWord: word,
+        nativeWord: translation,
+      });
+      console.log("Обновление успешно:", response.data);
+
+      setWords((prevWords) =>
+        prevWords.map((card) =>
+          card.id === id
+            ? {
+                ...card,
+                word: response.data.foreignWord,
+                translation: response.data.nativeWord,
+              }
+            : card
+        )
+      );
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
