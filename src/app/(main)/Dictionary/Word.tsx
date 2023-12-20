@@ -7,7 +7,7 @@ import { IWord } from "./Dictionary";
 
 interface WordProps extends IWord {
   onDelete: (id: string) => void;
-  onUpdate: (id: string) => void;
+  onUpdate: (updatedWord: IWord) => void;
 }
 
 const Word: React.FC<WordProps> = ({
@@ -33,7 +33,6 @@ const Word: React.FC<WordProps> = ({
 
   const turnEdit = (): void => {
     setEditPopupOpened((prevEditPopupOpened) => !prevEditPopupOpened);
-    onUpdate(id);
   };
 
   return (

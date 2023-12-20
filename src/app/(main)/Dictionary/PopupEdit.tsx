@@ -1,8 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { CurrentValueContext } from "@/contexts/useValue";
+import React, { useState } from "react";
+import { IWord } from "./Dictionary";
 
-const PopupEdit = ({ word, translation, popupIsOpened, onUpdate }) => {
+interface PopupEditProps extends IWord {
+  popupIsOpened: (open: boolean) => void;
+  onUpdate: (updatedWord: IWord) => void;
+}
+
+const PopupEdit: React.FC<PopupEditProps> = ({
+  id,
+  word,
+  translation,
+  popupIsOpened,
+  onUpdate,
+}) => {
   const [inputValue, setInputValue] = useState({
+    id,
     word,
     translation,
   });
@@ -11,15 +23,19 @@ const PopupEdit = ({ word, translation, popupIsOpened, onUpdate }) => {
     setInputValue({ ...inputValue, [evt.target.name]: evt.target.value });
   };
 
-  const handleSubmit = (evt: React.FormEvent<HTMLFormElement> ) => {
+  const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     onUpdate(inputValue);
     popupIsOpened(false);
+    console.log('PopupEdit:', inputValue)
   };
 
   return (
     <div className="w-1/2 h-1/2 absolute top-1/4 left-1/4 bg-black bg-opacity-30 z-[9999]">
-      <form className="flex justify-center items-center flex-col" onSubmit={handleSubmit}>
+      <form
+        className="flex justify-center items-center flex-col"
+        onSubmit={handleSubmit}
+      >
         <input
           id="word"
           type="text"

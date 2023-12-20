@@ -79,10 +79,12 @@ const Dictionary: React.FC = (): JSX.Element => {
   };
 
   const updateWord = async ({ word, translation, id }: IWord) => {
+    console.log("updateWord:", word, translation, id);
     try {
       const response = await axios.patch(`/api/cards/${id}`, {
         foreignWord: word,
         nativeWord: translation,
+        id,
       });
       console.log("Обновление успешно:", response.data);
 
@@ -98,7 +100,7 @@ const Dictionary: React.FC = (): JSX.Element => {
         )
       );
     } catch (error) {
-      console.log(error);
+      console.error("Ошибка при обновлении:", error);
     }
   };
 

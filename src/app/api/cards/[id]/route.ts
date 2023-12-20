@@ -34,7 +34,6 @@ export async function PATCH(request: Request) {
         nativeWord,
       },
     });
-
     return NextResponse.json(updateCard);
   } catch (error) {
     console.log(error);
