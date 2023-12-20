@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { IWord } from "./Dictionary";
+import { isRussian, isEnglish } from "@/utils/validation";
 
 interface PopupEditProps extends IWord {
   popupIsOpened: (open: boolean) => void;
@@ -25,9 +26,19 @@ const PopupEdit: React.FC<PopupEditProps> = ({
 
   const handleSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
+
+    if (!isEnglish(inputValue.word)) {
+      alert("English, motherfucker, English!");
+      return;
+    }
+
+    if (!isRussian(inputValue.translation)) {
+      alert("Говори по-русски, свинья!");
+      return;
+    }
+
     onUpdate(inputValue);
     popupIsOpened(false);
-    console.log('PopupEdit:', inputValue)
   };
 
   return (

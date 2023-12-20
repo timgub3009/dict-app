@@ -1,12 +1,18 @@
 import { NextResponse } from "next/server";
 
+import { isEnglish, isRussian } from "@/utils/validation";
+
 import prismadb from "../../lib/prismadb";
 
-export async function POST(request: Request) {
+export async function POST(request: Request, response: Response) {
   try {
     const body = await request.json();
 
     const { foreignWord, nativeWord } = body;
+
+    // if (!isEnglish(foreignWord) || !isRussian(nativeWord)) {
+    //   response
+    // }
 
     const newCard = await prismadb.card.create({
       data: {

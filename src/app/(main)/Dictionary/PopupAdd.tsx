@@ -8,15 +8,17 @@ import React, {
   ChangeEvent,
   FormEvent,
 } from "react";
-import { iWord } from "./Dictionary";
+import { IWord } from "./Dictionary";
+
+import { isRussian, isEnglish } from "@/utils/validation";
 
 type PopupAddProps = {
-  onAdd: (values: iWord) => void;
+  onAdd: (values: IWord) => void;
 };
 
 const PopupAdd: React.FC<PopupAddProps> = ({ onAdd }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [values, setValues] = useState<iWord>({
+  const [values, setValues] = useState<IWord>({
     word: "",
     translation: "",
     id: "",
@@ -38,6 +40,14 @@ const PopupAdd: React.FC<PopupAddProps> = ({ onAdd }) => {
 
   const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
+    if (!isEnglish(values.word)) {
+      alert("English, motherfucker, English!");
+      return;
+    }
+    if (!isRussian(values.translation)) {
+      alert("Говори по-русски, свинья!");
+      return;
+    }
     onAdd(values);
     setValues({ word: "", translation: "", id: generateId() });
     setIsOpen(false);

@@ -22,10 +22,6 @@ const Dictionary: React.FC = (): JSX.Element => {
   const [newTranslation, setNewTranslation] = useState<string>("");
 
   useEffect(() => {
-    console.log("Состояние words обновлено:", words);
-  }, [words]);
-
-  useEffect(() => {
     /**
      * Fetches data from the "/api/cards" endpoint and updates the words state.
      */
@@ -41,9 +37,8 @@ const Dictionary: React.FC = (): JSX.Element => {
           translation: card.nativeWord,
         }));
         setWords(mappedWords);
-        console.log(mappedWords);
       } catch (error) {
-        console.log(error);
+        console.log("Ошибка при рендере списка карточек:", error);
       }
     };
 
@@ -64,14 +59,14 @@ const Dictionary: React.FC = (): JSX.Element => {
       };
       setWords((prevWords) => [newWord, ...prevWords]);
     } catch (error) {
-      console.log(error);
+      console.log("Ошибка при сохранении:", error);
     }
   };
 
   const deleteWord = async (id: string): Promise<void> => {
     try {
       const response = await axios.delete(`/api/cards/${id}`);
-      console.log("Удаление успешно:", response.data);
+
       setWords((prevWords) => prevWords.filter((word) => word.id !== id));
     } catch (error) {
       console.error("Ошибка при удалении:", error);
@@ -79,14 +74,12 @@ const Dictionary: React.FC = (): JSX.Element => {
   };
 
   const updateWord = async ({ word, translation, id }: IWord) => {
-    console.log("updateWord:", word, translation, id);
     try {
       const response = await axios.patch(`/api/cards/${id}`, {
         foreignWord: word,
         nativeWord: translation,
         id,
       });
-      console.log("Обновление успешно:", response.data);
 
       setWords((prevWords) =>
         prevWords.map((card) =>
