@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import prismadb from "../../../lib/prismadb";
+import { isEnglish, isRussian } from "@/utils/validation";
+import { NextApiResponse } from "next";
 
 /**
  * Удаляет карточку из базы данных (и из списка карточек на сайте)
@@ -26,7 +28,9 @@ export async function DELETE(request: Request) {
 export async function PATCH(request: Request) {
   try {
     const body = await request.json();
+
     const { id, foreignWord, nativeWord } = body;
+
     const updateCard = await prismadb.card.update({
       where: { id },
       data: {

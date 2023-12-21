@@ -3,15 +3,21 @@ import { NextResponse } from "next/server";
 import { isEnglish, isRussian } from "@/utils/validation";
 
 import prismadb from "../../lib/prismadb";
+import { NextApiResponse } from "next";
 
-export async function POST(request: Request, response: Response) {
+export async function POST(request: Request, res: NextApiResponse) {
   try {
     const body = await request.json();
 
     const { foreignWord, nativeWord } = body;
 
+    /**
+     * TODO: Проверить и переписать метод, пока валидация на сервере не работает почему-то
+     */
     // if (!isEnglish(foreignWord) || !isRussian(nativeWord)) {
-    //   response
+    //   console.log('Error is here', foreignWord, nativeWord)
+    //   res.status(400).json({ error: "Неверный формат данных" });
+    //   return;
     // }
 
     const newCard = await prismadb.card.create({
